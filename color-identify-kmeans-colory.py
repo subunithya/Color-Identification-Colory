@@ -55,82 +55,6 @@ def convert_Lab2RGB(center_colors,rgbarr=[]):
     
     return rgbarr
 
-def get_closest_color_name(dominant):
-    #print("Dominant ==",dominant)
-    # Red Color
-    red =  np.uint8([[[150, 90, 100]]])
-    # Blue Color
-    blue = np.uint8([[[0,0,128]]])
-    white = np.uint8([[[200,255,255]]])
-    black = np.uint8([[[0,0,0]]])
-    gray = np.uint8([[[128,128,128]]])
-    
-    lime = np.uint8([[[0,255,0]]])
-    yellow = np.uint8([[[255,255,0]]])
-    cyan_aqua = np.uint8([[[0,255,255]]])
-    magenta = np.uint8([[[255,0,255]]])
-    silver = np.uint8([[[192,192,192]]])
-    
-    maroon = np.uint8([[[128,0,0]]])
-    olive = np.uint8([[[128,128,0]]])
-    green = np.uint8([[[0,128,0]]])
-    purple = np.uint8([[[128,0,128]]])
-    teal = np.uint8([[[0,128,128]]])
-    navy = np.uint8([[[0,0,128]]])
-    
-
-    # Convert from RGB to Lab Color Space
-    color_car_rgb =np.uint8([[[dominant[0], dominant[1], dominant[2]]]]) 
-    #print("Color_car _RGB ===", color_car_rgb)
-
-    color_red_lab = rgb2lab(red)
-    color_blue_lab = rgb2lab(blue)
-    color_black_lab = rgb2lab(black)
-    color_white_lab = rgb2lab(white)
-    color_gray_lab = rgb2lab(gray)
-    
-    color_lime_lab = rgb2lab(lime)
-    color_cyan_aqua_lab = rgb2lab(cyan_aqua)
-    color_magenta_lab = rgb2lab(magenta)
-    color_yellow_lab = rgb2lab(yellow)
-    
-    color_silver_lab = rgb2lab(silver)
-    color_maroon_lab = rgb2lab(maroon)
-    color_olive_lab = rgb2lab(olive)
-    color_green_lab = rgb2lab(green)
-    color_purple_lab = rgb2lab(purple)
-    color_teal_lab = rgb2lab(teal)
-    color_navy_lab = rgb2lab(navy)
-    
-    color_car_lab = rgb2lab(color_car_rgb)
-
-    # Convert from RGB to Lab Color Space
-    delta_e_red = deltaE_cie76(color_red_lab, color_car_lab)
-    delta_e_blue = deltaE_cie76(color_blue_lab, color_car_lab)
-    delta_e_black = deltaE_cie76(color_black_lab, color_car_lab)
-    delta_e_white = deltaE_cie76(color_white_lab, color_car_lab)
-    delta_e_gray = deltaE_cie76(color_gray_lab, color_car_lab)
-    
-    delta_e_lime = deltaE_cie76(color_lime_lab , color_car_lab)
-    delta_e_cyan_aqua = deltaE_cie76(color_cyan_aqua_lab , color_car_lab)
-    delta_e_magenta = deltaE_cie76(color_magenta_lab, color_car_lab)
-    delta_e_yellow = deltaE_cie76(color_yellow_lab, color_car_lab)
-    
-    delta_e_silver = deltaE_cie76(color_silver_lab, color_car_lab)
-    delta_e_maroon = deltaE_cie76(color_maroon_lab, color_car_lab)
-    delta_e_olive = deltaE_cie76(color_olive_lab, color_car_lab)
-    delta_e_green = deltaE_cie76(color_green_lab, color_car_lab)
-    delta_e_purple = deltaE_cie76(color_purple_lab, color_car_lab)
-    delta_e_teal = deltaE_cie76(color_teal_lab, color_car_lab)
-    delta_e_navy = deltaE_cie76(color_navy_lab, color_car_lab)
-
-    # print("-------red", delta_e_red, "blue", delta_e_blue, "white", delta_e_white, "black", delta_e_black)
-    
-
-    dicti = {"red": delta_e_red, "blue": delta_e_blue, "white": delta_e_white, "black": delta_e_black, "White": delta_e_white, "Gray": delta_e_gray, "Lime": delta_e_lime, "Cyan/Aqua": delta_e_cyan_aqua, "Magenta": delta_e_magenta, "Yellow": delta_e_yellow, "Silver": delta_e_silver, "Maroon": delta_e_maroon, "Olive": delta_e_olive, "Green": delta_e_green, "Purple": delta_e_purple, "Teal": delta_e_teal, "Navy": delta_e_navy}
-    key_min = min(dicti, key=dicti.get)
-    #print("Closest Color = ", key_min)
-    return key_min
 
 
 # Function to find the Most Occupied color using K-Means Algorithm .
@@ -142,9 +66,9 @@ def get_colors(image, number_of_colors, show_chart):
     
     # apply K-means algorithm - pass the no. of max. colors to find as argument .
     clf = KMeans(n_clusters = number_of_colors)
+
     # Fit and predict the labels for the mentioned no. of clusters. Compute cluster centers and predict cluster index for each sample.
     labels = clf.fit_predict(modified_image)
-    
     #print("Labels =====",labels)
     # Use Counter to store the no. of pixels available in each cluster
     # A Counter is a subclass of dict. Therefore it is an unordered collection where elements and their respective count are stored as dictionary. 
@@ -154,6 +78,7 @@ def get_colors(image, number_of_colors, show_chart):
     # sort to ensure correct color percentage
     counts = dict(sorted(counts.items()))
     #print("counts after sort = = = ",counts)
+
     #  finding the center color value for each of the clusters
     center_colors = clf.cluster_centers_ 
     #print("centerd_colors =========",center_colors)
@@ -166,8 +91,8 @@ def get_colors(image, number_of_colors, show_chart):
     ordered_colors = [center_colors[i] for i in counts.keys()]
     #for i in counts.items():
         #print("hex_col list",i)
+    
     hex_colors = [RGB2HEX(ordered_colors[i]) for i in counts.keys()] # This returns the Hexa-Decimal value of each cluster
-    #hex_colors = [get_colour_name(ordered_colors[i]) for i in counts.keys()] # This returns the color name as value of each cluster
     
     #print("hex_colors            ",hex_colors)
     Color_names = [Color(i,'xkcd').name for i in hex_colors]
@@ -181,12 +106,7 @@ def get_colors(image, number_of_colors, show_chart):
     global max_occupied_color
     for i,val in Counter(labels).most_common(1):
         max_color = i
-        #print("i = ",max_color)
-        #print("val = ",val)
-        #max_occupied_color = get_closest_color_name(ordered_colors[max_color])
-        #max_occupied_color = get_colour_name(ordered_colors[max_color])
         
-        #color_name = get_colour_name(ordered_colors[max_color])
         color_name = Color(hex_colors[max_color],'xkcd')
         
         print("Exact color name =",color_name.name)
@@ -218,7 +138,6 @@ def get_color_label(image):
     thickness = 1
     
     # Using cv2.putText() method 
-    #image = cv2.putText(image,max_occupied_color, org, font,fontScale, color, thickness, cv2.LINE_AA) 
     image = cv2.putText(cv2.cvtColor(image, cv2.COLOR_Lab2RGB),max_occupied_color, org, font,fontScale, color, thickness, cv2.LINE_AA,bottomLeftOrigin=False) 
     plt.imshow(image)
     plt.show()
