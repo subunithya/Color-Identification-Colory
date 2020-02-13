@@ -31,23 +31,21 @@ def get_image(image_path):
 
 # Function to convert the centered HSV cluster into RGB values
 def convert_Lab2RGB(center_colors,rgbarr=[]):
-    #print("Inside HSV2RGB - center colors =======",center_colors)
-    #print("shape = ",center_colors.shape)
+    
     for cluster in center_colors:
         #print("cluster %%%%%%%%%%",cluster)
         l = cluster[0]
         a = cluster[1]
         b = cluster[2]
-        #print("H,S,V ========",h,s,v)
-        # hsv2rgb = colorsys.hsv_to_rgb(h, s, v) 
+        
         lab_image = np.uint8([[[l,a,b ]]]) 
-        #print("hsv_image ***************",hsv_image)
+        
         lab2rgb = cv2.cvtColor(lab_image,cv2.COLOR_Lab2RGB)
 
         l1 = lab2rgb[0][0][0]
         a1 = lab2rgb[0][0][1]
         b1 = lab2rgb[0][0][2]
-        #print("h1,s1,v1&&&&&&&&&&&&&&&&&&&&&&&&&",h1,s1,v1)
+       
         rgb_row = [l1,a1,b1]
         #print("RGBrow =============",rgbrow)
         rgbarr.append(rgb_row)
@@ -70,6 +68,7 @@ def get_colors(image, number_of_colors, show_chart):
     # Fit and predict the labels for the mentioned no. of clusters. Compute cluster centers and predict cluster index for each sample.
     labels = clf.fit_predict(modified_image)
     #print("Labels =====",labels)
+    
     # Use Counter to store the no. of pixels available in each cluster
     # A Counter is a subclass of dict. Therefore it is an unordered collection where elements and their respective count are stored as dictionary. 
     counts = Counter(labels)
@@ -155,10 +154,8 @@ Image_Folder_Path =os.path.join(dir_path,IMAGE_DIRECTORY)
 for file in os.listdir(Image_Folder_Path):
     
     if not file.startswith('.') and file.endswith('.jpg'):
-        #print("PAth = ",os.path.join(Image_Folder_Path, file))
         print("PAth = ", file)
         Image_Path = os.path.join(Image_Folder_Path, file)
-        #crop_img = img[y:y+h, x:x+w]
         image1 = get_image(Image_Path)
         get_colors(image1,8,True)
         get_color_label(image1)
